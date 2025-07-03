@@ -11,7 +11,6 @@ A minimal quiz app built with Flutter.
 ## Getting Started
 
 ```bash
-git clone https://github.com/yourusername/flutter_quiz_app.git
 cd flutter_quiz_app
 flutter pub get
 flutter run
