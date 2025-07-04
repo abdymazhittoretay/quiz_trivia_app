@@ -21,8 +21,14 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.all(16.0),
+            shape: LinearBorder(),
+            backgroundColor: Theme.of(context).primaryColor,
+            foregroundColor: Theme.of(context).secondaryHeaderColor,
+          ),
           onPressed: () => () {},
-          child: const Text('Start Quiz'),
+          child: const Text('Start Quiz', style: TextStyle(fontSize: 18.0)),
         ),
       ),
     );
