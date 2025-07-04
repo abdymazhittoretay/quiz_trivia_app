@@ -6,7 +6,19 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Quiz Trivia'), centerTitle: true),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.quiz_outlined),
+            const SizedBox(width: 8.0),
+            const Text('Quiz Trivia'),
+          ],
+        ),
+        centerTitle: true,
+      ),
       body: Center(
         child: ElevatedButton(
           onPressed: () => () {},
