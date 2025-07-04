@@ -11,6 +11,6 @@ A minimal quiz app built with Flutter.
 ## Getting Started
 
 ```bash
-cd flutter_quiz_app
+cd quiz_trivia_app
 flutter pub get
 flutter run
