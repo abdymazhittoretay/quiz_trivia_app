@@ -45,7 +45,17 @@ class _QuizPageState extends State<QuizPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Question ${_currentIndex + 1} of ${_questions.length}'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.quiz_outlined),
+            SizedBox(width: 8.0),
+            Text('Question ${_currentIndex + 1} of ${_questions.length}'),
+          ],
+        ),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
