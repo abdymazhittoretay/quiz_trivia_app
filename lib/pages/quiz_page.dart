@@ -88,7 +88,7 @@ class _QuizPageState extends State<QuizPage> {
                           ? Theme.of(context).primaryColor
                           : null,
                     ),
-                    child: Text(answer),
+                    child: Text(answer, style: TextStyle(fontSize: 18.0)),
                   ),
                 );
               }),
@@ -105,6 +105,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
                 child: Text(
                   _currentIndex == _questions.length - 1 ? 'Finish' : 'Next',
+                  style: TextStyle(fontSize: 18.0),
                 ),
               ),
             ],
