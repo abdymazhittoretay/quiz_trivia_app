@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_trivia_app/pages/quiz_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -27,7 +28,12 @@ class HomePage extends StatelessWidget {
             backgroundColor: Theme.of(context).primaryColor,
             foregroundColor: Theme.of(context).secondaryHeaderColor,
           ),
-          onPressed: () => () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => QuizPage()),
+            );
+          },
           child: const Text('Start Quiz', style: TextStyle(fontSize: 18.0)),
         ),
       ),
