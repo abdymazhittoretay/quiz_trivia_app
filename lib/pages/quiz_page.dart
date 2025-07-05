@@ -64,26 +64,45 @@ class _QuizPageState extends State<QuizPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Spacer(),
-              Text(question['question'], style: const TextStyle(fontSize: 20)),
-              const SizedBox(height: 24),
+              Text(
+                question['question'],
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 24),
+              ),
+              const SizedBox(height: 30),
               ...answers.map((answer) {
                 final isSelected = answer == _selectedAnswer;
-                return ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedAnswer = answer;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: isSelected ? Theme.of(context).secondaryHeaderColor : null,
-                    backgroundColor: isSelected ? Theme.of(context).primaryColor : null,
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedAnswer = answer;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: isSelected
+                          ? Theme.of(context).secondaryHeaderColor
+                          : null,
+                      backgroundColor: isSelected
+                          ? Theme.of(context).primaryColor
+                          : null,
+                    ),
+                    child: Text(answer),
                   ),
-                  child: Text(answer),
                 );
               }),
               const Spacer(),
               ElevatedButton(
                 onPressed: _selectedAnswer != null ? _nextQuestion : null,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: _selectedAnswer != null
+                      ? Colors.white
+                      : null,
+                  backgroundColor: _selectedAnswer != null
+                      ? Colors.green
+                      : null,
+                ),
                 child: Text(
                   _currentIndex == _questions.length - 1 ? 'Finish' : 'Next',
                 ),
