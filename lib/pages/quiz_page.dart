@@ -57,33 +57,39 @@ class _QuizPageState extends State<QuizPage> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(question['question'], style: const TextStyle(fontSize: 20)),
-            const SizedBox(height: 24),
-            ...answers.map((answer) {
-              final isSelected = answer == _selectedAnswer;
-              return ElevatedButton(
-                onPressed: _selectedAnswer == null
-                    ? () => setState(() => _selectedAnswer = answer)
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Colors.blue : null,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Spacer(),
+              Text(question['question'], style: const TextStyle(fontSize: 20)),
+              const SizedBox(height: 24),
+              ...answers.map((answer) {
+                final isSelected = answer == _selectedAnswer;
+                return ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedAnswer = answer;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: isSelected ? Theme.of(context).secondaryHeaderColor : null,
+                    backgroundColor: isSelected ? Theme.of(context).primaryColor : null,
+                  ),
+                  child: Text(answer),
+                );
+              }),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: _selectedAnswer != null ? _nextQuestion : null,
+                child: Text(
+                  _currentIndex == _questions.length - 1 ? 'Finish' : 'Next',
                 ),
-                child: Text(answer),
-              );
-            }),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: _selectedAnswer != null ? _nextQuestion : null,
-              child: Text(
-                _currentIndex == _questions.length - 1 ? 'Finish' : 'Next',
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
