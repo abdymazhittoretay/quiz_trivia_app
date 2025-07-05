@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
             foregroundColor: Theme.of(context).secondaryHeaderColor,
           ),
           onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => QuizPage()),
             );
