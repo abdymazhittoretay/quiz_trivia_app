@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:quiz_trivia_app/models/question_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:quiz_trivia_app/pages/home_page.dart';
 import 'package:quiz_trivia_app/pages/result_page.dart';
 
 class QuizPage extends StatefulWidget {
@@ -25,10 +26,12 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> _loadQuestions() async {
-    _questions = await fetchQuestions();
-    setState(() {
-      _isLoading = false;
-    });
+    try {
+      _questions = await fetchQuestions();
+      setState(() => _isLoading = false);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   Future<List<QuestionModel>> fetchQuestions() async {
@@ -67,23 +70,37 @@ class _QuizPageState extends State<QuizPage> {
     }
   }
 
+  PreferredSizeWidget? _buildAppBar({required String title}) {
+    return AppBar(
+      leading: IconButton(
+        onPressed: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+            (route) => false,
+          );
+        },
+        icon: Icon(Icons.exit_to_app),
+      ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.quiz_outlined),
+          SizedBox(width: 8.0),
+          Text(title),
+        ],
+      ),
+      centerTitle: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.quiz_outlined),
-              SizedBox(width: 8.0),
-              Text('Question 1 of 10'),
-            ],
-          ),
-          centerTitle: true,
-        ),
+        appBar: _buildAppBar(title: 'Question 1 of 10'),
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -92,18 +109,8 @@ class _QuizPageState extends State<QuizPage> {
     final answers = question.allAnswers;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.quiz_outlined),
-            SizedBox(width: 8.0),
-            Text('Question ${_currentIndex + 1} of ${_questions!.length}'),
-          ],
-        ),
-        centerTitle: true,
+      appBar: _buildAppBar(
+        title: 'Question ${_currentIndex + 1} of ${_questions!.length}',
       ),
       body: SafeArea(
         child: Padding(
