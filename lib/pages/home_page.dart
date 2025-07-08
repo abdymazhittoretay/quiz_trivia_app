@@ -70,7 +70,6 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.all(16.0),
-                  shape: LinearBorder(),
                   backgroundColor: Theme.of(context).primaryColor,
                   foregroundColor: Theme.of(context).secondaryHeaderColor,
                 ),
