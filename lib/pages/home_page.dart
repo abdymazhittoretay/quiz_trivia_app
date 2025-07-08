@@ -9,6 +9,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final List<Map<String, dynamic>> categories = [
+    {'id': null, 'name': 'Any Category'},
+    {'id': 9, 'name': 'General Knowledge'},
+    {'id': 17, 'name': 'Science & Nature'},
+    {'id': 21, 'name': 'Sports'},
+    {'id': 22, 'name': 'Geography'},
+    {'id': 23, 'name': 'History'},
+    {'id': 27, 'name': 'Animals'},
+  ];
+  late Map<String, dynamic> _selectedCategory = categories[0];
   final List<String> _difficulties = ['easy', 'medium', 'hard'];
   String _selectedDifficulty = 'easy';
   int _amount = 10;
@@ -36,6 +46,22 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              DropdownButtonFormField<Map<String, dynamic>>(
+                value: _selectedCategory,
+                items: categories
+                    .map(
+                      (category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category['name']),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedCategory = value!),
+                decoration: const InputDecoration(labelText: 'Category'),
+              ),
+              SizedBox(height: 16.0),
+
               DropdownButtonFormField<String>(
                 value: _selectedDifficulty,
                 items: _difficulties
@@ -86,6 +112,7 @@ class _HomePageState extends State<HomePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => QuizPage(
+                          category: _selectedCategory["id"],
                           difficulty: _selectedDifficulty,
                           amount: _amount,
                         ),

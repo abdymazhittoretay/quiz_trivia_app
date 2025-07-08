@@ -6,10 +6,16 @@ import 'package:quiz_trivia_app/pages/home_page.dart';
 import 'package:quiz_trivia_app/pages/result_page.dart';
 
 class QuizPage extends StatefulWidget {
+  final int? category;
   final String difficulty;
   final int amount;
 
-  const QuizPage({super.key, required this.difficulty, required this.amount});
+  const QuizPage({
+    super.key,
+    required this.category,
+    required this.difficulty,
+    required this.amount,
+  });
 
   @override
   State<QuizPage> createState() => _QuizPageState();
@@ -39,7 +45,7 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<List<QuestionModel>> fetchQuestions() async {
     final url = Uri.parse(
-      'https://opentdb.com/api.php?amount=${widget.amount}&difficulty=${widget.difficulty}&type=multiple',
+      'https://opentdb.com/api.php?amount=${widget.amount}${widget.category == null ? "" : "&category=${widget.category}"}&difficulty=${widget.difficulty}&type=multiple',
     );
     final response = await http.get(url);
 
