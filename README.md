@@ -4,9 +4,10 @@ A minimal quiz app built with Flutter.
 
 ## Features
 
+- Choose of category, difficulty and # of questions
 - Multiple-choice questions  
 - Score summary  
-- Local or API-based questions
+- API-based questions
 
 ## Getting Started
 
