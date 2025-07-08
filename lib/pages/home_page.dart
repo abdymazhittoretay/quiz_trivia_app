@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<String> _difficulties = ['easy', 'medium', 'hard'];
   String _selectedDifficulty = 'easy';
+  int _amount = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +40,7 @@ class _HomePageState extends State<HomePage> {
                     .map(
                       (e) => DropdownMenuItem(
                         value: e,
-                        child: Text(
-                          e[0].toUpperCase() + e.substring(1),
-                        ), // "easy" → "Easy"
+                        child: Text(e[0].toUpperCase() + e.substring(1)),
                       ),
                     )
                     .toList(),
@@ -50,6 +49,22 @@ class _HomePageState extends State<HomePage> {
                 decoration: const InputDecoration(labelText: 'Difficulty'),
               ),
               SizedBox(height: 16.0),
+              TextFormField(
+                initialValue: _amount.toString(),
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Number of Questions',
+                ),
+                onChanged: (value) {
+                  final val = int.tryParse(value);
+                  if (val != null) {
+                    _amount = val;
+                  } else {
+                    _amount = 1;
+                  }
+                },
+              ),
+              const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.all(16.0),
@@ -58,13 +73,24 @@ class _HomePageState extends State<HomePage> {
                   foregroundColor: Theme.of(context).secondaryHeaderColor,
                 ),
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          QuizPage(difficulty: _selectedDifficulty),
-                    ),
-                  );
+                  if (_amount < 1 || _amount > 50) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Enter a number between 1 and 50'),
+                      ),
+                    );
+                    return;
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizPage(
+                          difficulty: _selectedDifficulty,
+                          amount: _amount,
+                        ),
+                      ),
+                    );
+                  }
                 },
                 child: const Text(
                   'Start Quiz',
