@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:quiz_trivia_app/models/question_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:quiz_trivia_app/models/question_model.dart';
 import 'package:quiz_trivia_app/pages/home_page.dart';
 import 'package:quiz_trivia_app/pages/result_page.dart';
 
@@ -22,7 +22,7 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<QuestionModel>? _questions;
+  late List<QuestionModel> _questions;
   int _currentIndex = 0;
   int _score = 0;
   String? _selectedAnswer;
@@ -36,17 +36,40 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<void> _loadQuestions() async {
     try {
-      _questions = await fetchQuestions();
-      setState(() => _isLoading = false);
+      _questions = await _fetchQuestions();
+
+      if (_questions.isEmpty && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No questions found for this selection.'),
+          ),
+        );
+        Navigator.pop(context);
+        return;
+      }
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     } catch (e) {
       debugPrint(e.toString());
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load questions.')),
+        );
+        Navigator.pop(context);
+      }
     }
   }
 
-  Future<List<QuestionModel>> fetchQuestions() async {
+  Future<List<QuestionModel>> _fetchQuestions() async {
+    final categoryParam = widget.category != null
+        ? '&category=${widget.category}'
+        : '';
     final url = Uri.parse(
-      'https://opentdb.com/api.php?amount=${widget.amount}${widget.category == null ? "" : "&category=${widget.category}"}&difficulty=${widget.difficulty}&type=multiple',
+      'https://opentdb.com/api.php?amount=${widget.amount}$categoryParam&difficulty=${widget.difficulty}&type=multiple',
     );
+
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -59,11 +82,11 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _nextQuestion() {
-    if (_selectedAnswer == _questions![_currentIndex].correctAnswer) {
+    if (_selectedAnswer == _questions[_currentIndex].correctAnswer) {
       _score++;
     }
 
-    if (_currentIndex < _questions!.length - 1) {
+    if (_currentIndex < _questions.length - 1) {
       setState(() {
         _currentIndex++;
         _selectedAnswer = null;
@@ -73,27 +96,20 @@ class _QuizPageState extends State<QuizPage> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              ResultPage(score: _score, total: _questions!.length),
+              ResultPage(score: _score, total: _questions.length),
         ),
       );
     }
   }
 
-  PreferredSizeWidget? _buildAppBar({required String title}) {
+  PreferredSizeWidget _buildAppBar({required String title}) {
     return AppBar(
       leading: IconButton(
-        onPressed: () {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-            (route) => false,
-          );
-        },
-        icon: Icon(Icons.exit_to_app),
+        onPressed: _confirmExit,
+        icon: const Icon(Icons.exit_to_app),
       ),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.quiz_outlined),
@@ -105,21 +121,70 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
+  void _confirmExit() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Exit Quiz?'),
+        content: const Text(
+          'Are you sure you want to exit? Progress will be lost.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+                (route) => false,
+              );
+            },
+            child: const Text('Exit'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool get isLastQuestion => _currentIndex == _questions.length - 1;
+
+  Widget _buildAnswerButton(String answer) {
+    final isSelected = answer == _selectedAnswer;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: ElevatedButton(
+        onPressed: () => setState(() => _selectedAnswer = answer),
+        style: ElevatedButton.styleFrom(
+          foregroundColor: isSelected
+              ? Theme.of(context).secondaryHeaderColor
+              : null,
+          backgroundColor: isSelected ? Theme.of(context).primaryColor : null,
+        ),
+        child: Text(answer, style: const TextStyle(fontSize: 18.0)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: _buildAppBar(title: 'Question 1 of ${widget.amount}'),
-        body: Center(child: CircularProgressIndicator()),
+        appBar: _buildAppBar(title: 'Loading...'),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    final question = _questions![_currentIndex];
+    final question = _questions[_currentIndex];
     final answers = question.allAnswers;
 
     return Scaffold(
       appBar: _buildAppBar(
-        title: 'Question ${_currentIndex + 1} of ${_questions!.length}',
+        title: 'Question ${_currentIndex + 1} of ${_questions.length}',
       ),
       body: SafeArea(
         child: Padding(
@@ -129,33 +194,12 @@ class _QuizPageState extends State<QuizPage> {
             children: [
               const Spacer(),
               Text(
-                question.question,
+                "${_currentIndex + 1}. ${question.question}",
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 24),
               ),
               const SizedBox(height: 30),
-              ...answers.map((answer) {
-                final isSelected = answer == _selectedAnswer;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 4.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectedAnswer = answer;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: isSelected
-                          ? Theme.of(context).secondaryHeaderColor
-                          : null,
-                      backgroundColor: isSelected
-                          ? Theme.of(context).primaryColor
-                          : null,
-                    ),
-                    child: Text(answer, style: const TextStyle(fontSize: 18.0)),
-                  ),
-                );
-              }),
+              ...answers.map(_buildAnswerButton),
               const Spacer(),
               ElevatedButton(
                 onPressed: _selectedAnswer != null ? _nextQuestion : null,
@@ -168,7 +212,7 @@ class _QuizPageState extends State<QuizPage> {
                       : null,
                 ),
                 child: Text(
-                  _currentIndex == _questions!.length - 1 ? 'Finish' : 'Next',
+                  isLastQuestion ? 'Finish' : 'Next',
                   style: const TextStyle(fontSize: 18.0),
                 ),
               ),
