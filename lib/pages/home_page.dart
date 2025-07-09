@@ -10,13 +10,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> categories = [
-    {'id': null, 'name': 'Any Category'},
-    {'id': 9, 'name': 'General Knowledge'},
-    {'id': 17, 'name': 'Science & Nature'},
-    {'id': 21, 'name': 'Sports'},
-    {'id': 22, 'name': 'Geography'},
-    {'id': 23, 'name': 'History'},
-    {'id': 27, 'name': 'Animals'},
+    {'id': null, 'name': 'Any Category', 'icon': Icons.all_inclusive},
+    {'id': 9, 'name': 'General Knowledge', 'icon': Icons.public},
+    {'id': 17, 'name': 'Science & Nature', 'icon': Icons.science},
+    {'id': 21, 'name': 'Sports', 'icon': Icons.sports_soccer},
+    {'id': 22, 'name': 'Geography', 'icon': Icons.map},
+    {'id': 23, 'name': 'History', 'icon': Icons.history_edu},
+    {'id': 27, 'name': 'Animals', 'icon': Icons.pets},
   ];
   late Map<String, dynamic> _selectedCategory = categories[0];
   final List<String> _difficulties = ['easy', 'medium', 'hard'];
@@ -52,7 +52,13 @@ class _HomePageState extends State<HomePage> {
                     .map(
                       (category) => DropdownMenuItem(
                         value: category,
-                        child: Text(category['name']),
+                        child: Row(
+                          children: [
+                            Icon(category['icon'], size: 20),
+                            const SizedBox(width: 8),
+                            Text(category['name']),
+                          ],
+                        ),
                       ),
                     )
                     .toList(),
