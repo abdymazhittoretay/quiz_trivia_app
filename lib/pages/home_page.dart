@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(
         builder: (context) => QuizPage(
-          category: _selectedCategory?["id"] ?? "9",
+          category: _selectedCategory?["id"] ?? 9,
           difficulty: _selectedDifficulty,
           amount: amount,
         ),
