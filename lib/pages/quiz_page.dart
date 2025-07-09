@@ -136,7 +136,6 @@ class _QuizPageState extends State<QuizPage> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const HomePage()),
