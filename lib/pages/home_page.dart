@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   late Map<String, dynamic> _selectedCategory = categories[0];
   final List<String> _difficulties = ['easy', 'medium', 'hard'];
   String _selectedDifficulty = 'easy';
-  int _amount = 10;
+  final _controller = TextEditingController(text: '10');
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
       ),
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -61,7 +61,6 @@ class _HomePageState extends State<HomePage> {
                 decoration: const InputDecoration(labelText: 'Category'),
               ),
               SizedBox(height: 16.0),
-
               DropdownButtonFormField<String>(
                 value: _selectedDifficulty,
                 items: _difficulties
@@ -78,19 +77,11 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 16.0),
               TextFormField(
-                initialValue: _amount.toString(),
+                controller: _controller,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: 'Number of Questions',
                 ),
-                onChanged: (value) {
-                  final val = int.tryParse(value);
-                  if (val != null) {
-                    _amount = val;
-                  } else {
-                    _amount = 1;
-                  }
-                },
               ),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -100,25 +91,28 @@ class _HomePageState extends State<HomePage> {
                   foregroundColor: Theme.of(context).secondaryHeaderColor,
                 ),
                 onPressed: () {
-                  if (_amount < 1 || _amount > 50) {
+                  final parsedAmount = int.tryParse(_controller.text);
+                  if (parsedAmount == null ||
+                      parsedAmount < 1 ||
+                      parsedAmount > 50) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Enter a number between 1 and 50'),
+                        content: Text('Enter a valid number between 1 and 50'),
                       ),
                     );
                     return;
-                  } else {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => QuizPage(
-                          category: _selectedCategory["id"],
-                          difficulty: _selectedDifficulty,
-                          amount: _amount,
-                        ),
-                      ),
-                    );
                   }
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QuizPage(
+                        category: _selectedCategory["id"],
+                        difficulty: _selectedDifficulty,
+                        amount: parsedAmount,
+                      ),
+                    ),
+                  );
                 },
                 child: const Text(
                   'Start Quiz',
@@ -130,5 +124,11 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
